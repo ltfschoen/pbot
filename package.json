@@ -1,10 +1,10 @@
 {
-  "name": "giveth-bot",
-  "version": "1.0.0",
+  "name": "pbot",
+  "version": "0.0.1",
   "main": "index.js",
   "license": "GPL-3.0",
   "scripts": {
-    "test": "eslint .",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "node index"
   },
