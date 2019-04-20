@@ -76,13 +76,13 @@ function getNewToken(oAuth2Client, callback) {
   });
 }
 
-const client = sdk.createClient('https://matrix.org');
-
 function authenticated(auth) {
   fs.readFile('bot_credentials.json', (err, content) => {
     if (err) return console.log('Error loading bot credentials', err);
 
     content = JSON.parse(content);
+
+    const client = sdk.createClient(content.base_url);
 
     client.login(
       'm.login.password',
@@ -97,7 +97,7 @@ function authenticated(auth) {
 
         console.log(`Logged in ${data.user_id} on device ${data.device_id}`);
         const client = sdk.createClient({
-          baseUrl: 'https://matrix.org',
+          baseUrl: content.base_url,
           accessToken: data.access_token,
           userId: data.user_id,
           deviceId: data.device_id,

@@ -1,3 +1,4 @@
+const fs = require('fs');
 const dayjs = require('dayjs');
 const {
   point_types,
@@ -138,46 +139,54 @@ function handleDish(event, room, privateRooms, notificationFunc, client, auth) {
     'gi'
   );
 
-  if (event.getSender() == `@${process.env.BOT_USER}:matrix.org`) {
-    // we sent the message.
-    return;
-  }
+  fs.readFile('bot_credentials.json', (err, content) => {
+    if (err) return console.log('Error loading bot credentials', err);
 
-  if (event.getContent().formatted_body) {
-    message = event.getContent().formatted_body;
-    if (message.includes('</blockquote>')) {
-      message = message = message.split('</blockquote>')[1];
+    content = JSON.parse(content);
+
+    const client = sdk.createClient(content.base_url);
+
+    if (event.getSender() == constent.bot_username) {
+      // we sent the message.
+      return;
     }
-  } else if (message.trim()[0] == '>') {
-    // quoting another user, skip the quoted part
-    message = message.split('\n\n')[1];
-  }
 
-  let match;
-  do {
-    match = regex.exec(message);
-    if (match) {
-      tryDish(
-        event,
-        room,
-        client,
-        auth,
-        privateRooms,
-        notificationFunc,
-        match[1],
-        match[2],
-        match[3],
-        match[5]
+    if (event.getContent().formatted_body) {
+      message = event.getContent().formatted_body;
+      if (message.includes('</blockquote>')) {
+        message = message = message.split('</blockquote>')[1];
+      }
+    } else if (message.trim()[0] == '>') {
+      // quoting another user, skip the quoted part
+      message = message.split('\n\n')[1];
+    }
+
+    let match;
+    do {
+      match = regex.exec(message);
+      if (match) {
+        tryDish(
+          event,
+          room,
+          client,
+          auth,
+          privateRooms,
+          notificationFunc,
+          match[1],
+          match[2],
+          match[3],
+          match[5]
+        );
+        matched = true;
+      }
+    } while (match);
+    if (!matched) {
+      client.sendTextMessage(
+        room.roomId,
+        'ERROR, please use the following format:\n!dish [#of points] [type of points] points to [handle, handle, handle] for [reason]'
       );
-      matched = true;
     }
-  } while (match);
-  if (!matched) {
-    client.sendTextMessage(
-      room.roomId,
-      'ERROR, please use the following format:\n!dish [#of points] [type of points] points to [handle, handle, handle] for [reason]'
-    );
-  }
+  });
 }
 
 function tryDish(
