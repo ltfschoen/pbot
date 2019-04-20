@@ -13,11 +13,13 @@ const TOKEN_PATH = 'credentials.json';
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
+  console.log('Authorizing Google OAuth2 APIs for Google Sheets API');
   // Authorize a client with credentials, then call the Google Sheets API.
   authorize(JSON.parse(content), authenticated);
 });
 
 fs.readFile('./privateRooms.json', 'utf8', function(err, data) {
+  console.log('Reading privateRooms.json');
   if (!err) {
     privateRooms = JSON.parse(data);
   }
@@ -30,6 +32,7 @@ fs.readFile('./privateRooms.json', 'utf8', function(err, data) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
+  console.log('authorize - Creating OAuth2 client');
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
@@ -39,7 +42,11 @@ function authorize(credentials, callback) {
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewToken(oAuth2Client, callback);
+    if (err) {
+      console.log('authorize - Creating new client token');
+      return getNewToken(oAuth2Client, callback);
+    }
+    console.log('authorize - Setting client token stored in credentials.json');
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
@@ -77,6 +84,7 @@ function getNewToken(oAuth2Client, callback) {
 }
 
 function authenticated(auth) {
+  console.log('authenitcated');
   fs.readFile('bot_credentials.json', (err, content) => {
     if (err) return console.log('Error loading bot credentials', err);
 
@@ -132,12 +140,14 @@ function authenticated(auth) {
         });
 
         client.startClient(0);
+        console.log('Started client');
       }
     );
   });
 }
 
 function savePrivateRooms() {
+  console.log('savePrivateRooms');
   fs.writeFile(
     './privateRooms.json',
     JSON.stringify(privateRooms, null, 2),
@@ -147,9 +157,9 @@ function savePrivateRooms() {
 
 // Zeit NOW workaround
 const http = require('http');
-http
-  .createServer((req, res) => {
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end('Hello there!');
-  })
-  .listen();
+http.createServer(callback).listen(8082);
+
+function callback(req, res) {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.end('Hello there!');
+}

@@ -178,6 +178,12 @@ module.exports.messages = {
       \n* Our [Giveth Google Drive workspace](https://drive.google.com/drive/folders/0B2gzflwFITCBNGtDRHIyakJiaTA)\n\
       \n* Check out the events we are attending or organizing in our [calendar](https://calendar.google.com/calendar/embed?src=givethdotio%40gmail) most notably the DApp team meeting happening every Wednesday at 20:00 on https://meet.jit.si/giveth-devteam",
   },
+
+  // TriviaTest
+  // Note: KPhFUARUOOHcIXayFS is the room id
+  '!KPhFUARUOOHcIXayFS:matrix.parity.io': {
+    internalMsg: 'Welcome!',
+  },
 };
 
 module.exports.questions = {
